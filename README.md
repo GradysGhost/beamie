@@ -12,7 +12,10 @@ from anywhere with an internet connection. Its primary features include:
  * Data storage in any relational database, including SQLite for local storage
    and MySQL/PostgreSQL for more distributed setups.
  * A plugin interface for extending the API.
-
+ * A built-in client that allows users to connect their Beamie server to other
+   Beamie servers and aggregate responses from those servers into thier server's
+   responses, creating a network of Beamie servers able to serve media to all
+   its connected users.
 
 ## Aims and Goals
 
@@ -23,6 +26,7 @@ Beamie has some philosophical goals:
    [Rest API Design Rulebook](https://library.oreilly.com/book/0636920021575/rest-api-design-rulebook/toc).
  * Decoupling of data storage, logic, and presentation
  * Extensibility
+ * Seamless connectivity with other Beamie instances
 
 To exemplify this project's goals by contrast, see the open source project
 [Subsonic](https://www.subsonic.org/). Subsonic is pretty cool, and I don't
