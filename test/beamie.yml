@@ -1,0 +1,22 @@
+# Data/media settings
+sqlite_db: "data/beamie.db"
+allowed_extensions:
+  - mp3
+  - ogg
+media_paths:
+  - ./test/media
+
+# Site/network settings
+site_title: "Test!"
+bind_address: 127.0.0.1
+bind_port: 1337
+
+# Authentication settings
+token_expiry: 43200  # Seconds until a token expires
+token_secret: KG295DAI7mY67XwX893R7435F48h52iS938i275X809324thD84a79UW04AZ
+token_issuer: beamie-test-suite
+
+# Logging
+logging:
+    format: '[%(asctime)s] [%(levelname)s] %(message)s'
+    level: 'DEBUG'

@@ -1,0 +1,12 @@
+*.pyc
+*.db
+*.swp
+.coverage
+beamie.log
+bin/
+data/media
+include/
+./lib/
+local/
+blank.py
+
