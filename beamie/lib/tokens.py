@@ -67,7 +67,6 @@ def do_validate_token(token_id):
 
         if token.expiry > int(time()):
             token_data['id'] = token.id
-            token_data['issuer'] = CONFIG['token_issuer']
             token_data['expiry'] = token.expiry
             token_data['user']  = {
                 'username' : token.user.username

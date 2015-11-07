@@ -12,7 +12,7 @@ The default username and password is 'root' / 'adminpass'.
 
 ### POST /tokens
 
-Authenticates a user and responds with a JWT token.
+Authenticates a user and responds with a token.
 
 #### Request Body
 

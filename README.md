@@ -68,14 +68,84 @@ goals, however.
 
 ## Usage Notes
 
+### Clone this Repo
+
+    git clone git@github.com:GradysGhost/beamie.git /opt/beamie
+
+### PYTHONPATH
+To do just about anything, you need `PYTHONPATH` set to the root of the git
+repo. So maybe...
+
+    cd /opt/beamie
+    export PYTHONPATH=$PWD
+
+### Dependencies
+
+Install Beamie's dependencies. MySQL support depends on the `mysql-python` pip
+package, which itself depends on some MySQL client libraries. You'll need to
+install them first.
+
+#### Debian/Ubuntu
+
+    sudo apt-get install libmysqlclient-dev
+
+#### CentOS
+
+    sudo yum install mysql-devel
+
+And then you need to install some python packages:
+
+    pip install -r requirements.txt
+
+### Build a Clean Database
+
 Don't forget to initialize a clean database before starting Beamie up.
 
-    cd /path/to/beamie
-    export PYTHONPATH=$PWD
+#### SQLite
+
     python db-init.py sqlite:///data/beamie.db
 
+#### MySQL
 
-## Test Data
+    python db-init.py mysql://username:password@host:3306/schema
+
+Also don't forget to set the `db_string` value in the config file (`beamie.yml`
+by default) to the connetion string you used to create the database.
+
+### Run Beamie
+
+    python runbeamie.py
+
+
+## Configuration
+
+### Command Line Arguments
+
+    $ python runbeamie.py  -h
+    usage: runbeamie.py [-h] [-c [CONFIG_FILE]] [-t]
+    
+    Run the Beamie server
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -c [CONFIG_FILE], --config [CONFIG_FILE]
+                            Path to Beamie's config file
+      -t, --test            Run full tests and quit
+
+### Config File Options
+
+ * `db_string` - The database connection string.
+ * `allowed_extensions` - The media scanner will only pay attention to media
+   files that have these extensions.
+ * `media_paths` - A list of directories where Beamie looks for media.
+ * `bind_address`- The IP address to bind to.
+ * `bind_port` - The port to listen on.
+ * `token_expiry` - The number of seconds that a new token is valid for.
+ * `logging` - A [Python logger configuration object]
+   (https://docs.python.org/2/library/logging.config.html)
+
+
+## Test Data Credit
 
 The media files in `test/media` are graciously provided by artists who
 release their art under a Creative Commons license that allows us to store

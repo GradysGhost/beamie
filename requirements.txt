@@ -4,5 +4,5 @@ mutagen
 PyYAML
 requests
 sqlalchemy
-pyjwt
+mysql-python
 
