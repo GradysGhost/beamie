@@ -412,7 +412,7 @@ def validate_good_token_with_good_x_auth_token():
         outcome['successes'].append("validate_good_token_with_good_x_auth_token")
         log.debug("OK")
     except AssertionError:
-        outcome['failures'].append("validate_good_token_with_good_x_auth_token: Expected status code %i, got %i; expected valid JWT, got %s" % (
+        outcome['failures'].append("validate_good_token_with_good_x_auth_token: Expected status code %i, got %i; expected valid token, got %s" % (
                   200, resp.status_code, resp.text ))
         return
 

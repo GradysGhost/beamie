@@ -4,7 +4,6 @@
 # Global modules
 import flask
 import hashlib
-import jwt
 import logging as log
 import math
 import random
@@ -70,7 +69,7 @@ def generate_token(user):
 
 def authenticate(user, passwd):
     """Authenticates a user and generates a token
-       Returns a JWT string when successful, False for password mismatches,
+       Returns a token ID when successful, False for password mismatches,
        and None when we can't find the username provided.
     """
     session = data.session()
