@@ -31,11 +31,12 @@ responses:
 
 ### POST /users
 
-Creates a new user. Requires an 'administrator' token.
+Creates a new user. Requires an 'administrator' token. Returns the new user
+object.
 
 #### Request Body
 
-    { "user" : "preferred_username",
+    { "username" : "preferred_username",
       "password" : "P@ssw0rd#1!",
       "roles" : [
         "listener",
