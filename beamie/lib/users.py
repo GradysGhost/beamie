@@ -5,6 +5,7 @@
 import beamie.data as data
 
 from beamie.lib.roles import get_roles
+from beamie.lib.text import generate_salt
 
 
 
@@ -27,7 +28,7 @@ def create_user(username, password, roles=None):
     # Create the new user object
     user = data.User(
         pwhash = hashlib.sha512("".join([password, user.salt])).hexdigest(),
-        salt = shared.generate_salt(),
+        salt = generate_salt(),
         username = username
     )
     session.add(user)
@@ -91,7 +92,7 @@ def update_password(username, new_pass):
     users = session.query(data.User).filter_by(username=username)
     if users.count() >= 1:
         user = users.first()
-        user.salt = shared.generate_salt()
+        user.salt = generate_salt()
         user.pwhash = hashlib.sha512("".join([new_pass, user.salt])).hexdigest()
         session.commit()
         return True

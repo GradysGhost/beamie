@@ -7,7 +7,7 @@ import json
 import logging as log
 
 # Local imports
-from beamie import app, shared
+from beamie import app
 from beamie.lib.auth import Authorized
 from beamie.lib.tokens import do_validate_token
 from beamie.lib.users import create_user, get_user, update_password, delete_user

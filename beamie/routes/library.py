@@ -8,7 +8,7 @@ import logging as log
 import os
 
 # Local imports
-from beamie import app, data, shared
+from beamie import app, data
 from beamie.config import CONFIG
 from beamie.lib.auth import Authorized
 from beamie.lib.mediascanner import MediaScanner
