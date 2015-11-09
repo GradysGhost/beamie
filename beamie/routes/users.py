@@ -9,7 +9,7 @@ import logging as log
 # Local imports
 from beamie import app
 from beamie.lib.auth import Authorized
-from beamie.lib.tokens import do_validate_token
+from beamie.lib.tokens import validate_token
 from beamie.lib.users import create_user, get_user, update_password, delete_user
 
 DEFAULT_HEADERS = { "Content-Type" : "application/json" }
@@ -62,7 +62,7 @@ def handle_post_users():
         if 'username' not in req_data or 'password' not in req_data:
             return flask.make_response(
                 json.dumps({
-                    'error' : 'Missing username or password data' }
+                    'error' : 'Missing username or password data'
                 }),
                 400,
                 DEFAULT_HEADERS
@@ -118,7 +118,7 @@ def handle_put_users_username():
             return flask.make_response(
                 json.dumps({
                     'error' : 'Missing password data'
-                },
+                }),
                 400,
                 DEFAULT_HEADERS
             )

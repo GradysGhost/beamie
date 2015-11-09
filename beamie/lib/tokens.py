@@ -104,7 +104,7 @@ def validate_token(token_id):
             return token_data
         else:
             log.debug("Token is expired; deleting: %s" % token_id)
-            do_revoke_token(token_id)
+            revoke_token(token_id)
             return False
 
     else:

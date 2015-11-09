@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import flask
+import hashlib
 import logging as log
 
 import beamie.data as data
-
-from beamie.lib.tokens import validate_token
+from beamie.lib.tokens import generate_token, validate_token
 
 DEFAULT_HEADERS = { "Content-Type" : "application/json" }
 
@@ -57,7 +57,7 @@ class Authorized(object):
             if 'disabled' in token_data['user']['roles']:
                 return flask.make_response('', 401)
 
-            if strict:
+            if self.strict:
                 allowed = True
                 for role in self.allowed_roles:
                     if role not in token_data['user']['roles']:
