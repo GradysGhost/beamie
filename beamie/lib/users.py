@@ -2,11 +2,8 @@
 # -*- coding: utf-8 -*-
 
 
-import flask
-
 import beamie.data as data
 
-from beamie.lib.auth import Authenticated
 from beamie.lib.roles import get_roles
 
 

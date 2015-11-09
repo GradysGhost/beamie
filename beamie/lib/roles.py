@@ -4,12 +4,12 @@
 
 import beamie.data
 
-from beamie.lib.auth import Authenticated
+from beamie.lib.auth import Authorized
 
 
 
 
-@Authenticated(["listener", "contributor", "administrator"])
+@Authorized(["listener", "contributor", "administrator"])
 def get_roles():
     session = data.session()
     roles = [ {

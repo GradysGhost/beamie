@@ -8,7 +8,7 @@ import logging as log
 
 # Local imports
 from beamie import app, shared
-from beamie.lib.auth import Authenticated
+from beamie.lib.auth import Authorized
 from beamie.lib.tokens import do_validate_token
 from beamie.lib.users import create_user, get_user, update_password, delete_user
 
@@ -51,7 +51,7 @@ def delete_users_username(username):
 
 ##### HANDLERS #####
 
-@Authenticated(['administrator'])
+@Authorized(['administrator'])
 def handle_post_users():
     """Handles logic and data transformation for POSTs to /users"""
 
@@ -171,7 +171,7 @@ def handle_get_users_username(username):
         return flask.make_response('', 404)
 
 
-@Authenticated(['administrator'])
+@Authorized(['administrator'])
 def handle_delete_users_username(username):
     """Handles logic and data transformation for DELETEs to /users/<username>"""
     if delete_user(username):

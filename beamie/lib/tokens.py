@@ -8,7 +8,7 @@ from time import time
 from beamie import data
 from beamie.config import CONFIG
 
-def do_tidy_tokens():
+def tidy_tokens():
     session = data.session()
 
     expired_tokens = session.query(data.Token).filter(
@@ -22,7 +22,7 @@ def do_tidy_tokens():
     return count
 
 
-def do_purge_tokens():
+def purge_tokens():
     session = data.session()
 
     to_delete = session.query(data.Token)
@@ -32,7 +32,7 @@ def do_purge_tokens():
     session.commit()
     return count
 
-def do_revoke_token(token_id):
+def revoke_token(token_id):
     session = data.session()
 
     tokens = session.query(data.Token).filter_by(id=token_id)
@@ -46,7 +46,7 @@ def do_revoke_token(token_id):
         log.debug("Cannot revoke token because it doesn't exist: %s" % token_id)
         return False
 
-def do_validate_token(token_id):
+def validate_token(token_id):
     ''' Performs token validation. Returns different values under different
         circumstances:
         

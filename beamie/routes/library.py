@@ -10,7 +10,7 @@ import os
 # Local imports
 from beamie import app, data, shared
 from beamie.config import CONFIG
-from beamie.lib.auth import Authenticated
+from beamie.lib.auth import Authorized
 from beamie.lib.mediascanner import MediaScanner
 
 ##### ROUTE DEFINITIONS #####
@@ -144,7 +144,7 @@ def get_artist(artist_id):
 
 ##### HANDLERS #####
 
-@Authenticated(['contributor', 'administrator'])
+@Authorized(['contributor', 'administrator'])
 def scan():
     outcome = {
         "orphans" : list(),
@@ -293,7 +293,7 @@ def scan():
 
     return json.dumps(outcome)
 
-@Authenticated(['listener'])
+@Authorized(['listener'])
 def get_artists(filters={}):
     session = data.session()
     artists = session.query(data.Artist)
@@ -313,7 +313,7 @@ def get_artists(filters={}):
     return artists
 
 
-@Authenticated(['listener'])
+@Authorized(['listener'])
 def get_albums(filters={}):
     session = data.session()
     albums = session.query(data.Album).join(data.Album.artist)
@@ -334,7 +334,7 @@ def get_albums(filters={}):
 
     return albums
 
-@Authenticated(['listener'])
+@Authorized(['listener'])
 def get_tracks(filters={}):
     session = data.session()
     tracks = session.query(data.Track).join(data.Track.album).join(data.Album.artist)

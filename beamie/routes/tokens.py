@@ -8,44 +8,62 @@ import logging as log
 
 # Local imports
 from beamie import app, shared
-from beamie.lib.auth import Authenticated
-from beamie.lib.tokens import do_purge_tokens, do_tidy_tokens, do_revoke_token, do_validate_token
+from beamie.lib.auth import Authorized, authenticate
+from beamie.lib.tokens import
+    purge_tokens,
+    tidy_tokens,
+    revoke_token,
+    validate_token
+
+DEFAULT_HEADERS = { "Content-Type" : "application/json" }
 
 ##### ROUTES #####
 
 # POST /tokens
 @app.route('/tokens', methods=[ 'POST' ])
 def post_tokens():
-    return create_token()
+    """Route POSTs to /tokens."""
+
+    return handle_post_tokens()
 
 # POST /tokens/purge
 # Call this to invalidate by deletion all tokens
 @app.route('/tokens/purge', methods=[ 'POST' ])
 def post_tokens_purge():
-    return purge_tokens()
+    """Route POSTs to /tokens/purge."""
+
+    return handle_post_tokens_purge()
 
 # POST /tokens/tidy
 # Call this to delete all expired tokens
 @app.route('/tokens/tidy', methods=[ 'POST' ])
 def post_tokens_tidy():
-    return tidy_tokens()
+    """Route POSTs to /tokens/tidy."""
+
+    return handle_post_tokens_tidy()
 
 # GET /tokens/<token_to_validate>
-@app.route('/tokens/<token_to_validate>', methods=[ 'GET' ])
-def get_tokens(token_to_validate):
-    return validate_token(token_to_validate)
+@app.route('/tokens/<token>', methods=[ 'GET' ])
+def get_tokens(token):
+    """Route GETs to /tokens/<token>."""
+
+    return handle_get_tokens(token)
 
 # DELETE /tokens/<token_to_revoke>
 # Use this to invalidate a token before its expiry
-@app.route('/tokens/<token_to_revoke>', methods=[ 'DELETE' ])
-def delete_tokens(token_to_revoke):
-    return revoke_token(token_to_revoke)
+@app.route('/tokens/<token>', methods=[ 'DELETE' ])
+def delete_tokens(token):
+    """Route DELETEs to /tokens/<token>."""
+
+    return handle_delete_tokens(token)
 
 
 ##### HANDLERS #####
 
 # This is Beamie's authentication call. It cannot require prior auth.
-def create_token():
+def handle_post_tokens():
+    """Handles logic and data transformation for POSTs to /tokens."""
+
     req = flask.request
     data = {}
 
@@ -55,58 +73,91 @@ def create_token():
     try:
         data = json.loads(req.data)
     except ValueError:
-        flask.abort(400)
+        return flask.make_response(
+            json.dumps({
+                'error' : 'Invalid JSON' }
+            ),
+            400,
+            DEFAULT_HEADERS
+        )
 
     # Did the user give us good credentials?
     try:
-        auth = shared.authenticate(data['user'], data['password'])
+        auth = authenticate(data['username'], data['password'])
     except KeyError:
-        flask.abort(400)
+        return flask.make_response(
+            json.dumps({
+                'error' : 'Missing username or password data'
+            },
+            400,
+            DEFAULT_HEADERS
+        )
 
     # Cases for invalid user, invalid password, and success
     if auth is None:
         log.debug("Invalid user %s" % data['user'])
-        flask.abort(401)
+        return flask.make_response('', 401)
     elif auth is False:
         log.debug("Authentication failed for user %s" % data['user'])
-        flask.abort(401)
+        return flask.make_response('', 401)
     else:
         log.debug("Generated token for user %s: %s" % (data['user'], auth))
-        resp = flask.make_response(json.dumps({ "token" : auth }))
-        resp.headers['Content-Type'] = 'application/json'
-        return resp
+        return flask.make_response(
+            json.dumps({
+                'token' : auth
+            }),
+            200,
+            DEFAULT_HEADERS
+        )
 
-@Authenticated(['administrator'])
+@Authorized(['administrator'])
 def purge_tokens():
-    deleted_count = do_purge_tokens()
+    """Handles logic and data transformation for POSTs to /tokens/purge."""
 
-    resp = flask.make_response(json.dumps({ 'count' : deleted_count }))
-    resp.headers['Content-Type'] = 'application/json'
-    return resp
+    deleted_count = purge_tokens()
 
-@Authenticated(['administrator'])
+    return flask.make_response(
+        json.dumps({
+            'count' : deleted_count
+        }),
+        200,
+        DEFAULT_HEADERS
+    )
+
+@Authorized(['administrator'])
 def tidy_tokens():
-    deleted_count = do_tidy_tokens()
+    """Handles logic and data transformation for POSTs to /tokens/tidy."""
 
-    resp = flask.make_response(json.dumps({ 'count' : deleted_count }))
-    resp.headers['Content-Type'] = 'application/json'
-    return resp
+    deleted_count = tidy_tokens()
 
-@Authenticated(['administrator'])
+    return flask.make_response(
+        json.dumps(
+            'count' : deleted_count
+        }),
+        200,
+        DEFAULT_HEADERS
+    )
+
+@Authorized(['administrator'])
 def revoke_token(token_id):
-    if do_revoke_token(token_id):
-        return ''
-    else:
-        flask.abort(404)
-        
+    """Handles logic and data transformation for DELETEs to /tokens/<token>."""
 
-@Authenticated(['administrator'])
-def validate_token(token_id):
-    token_data = do_validate_token(token_id)
-    if token_data:
-        resp = flask.make_response(json.dumps(token_data))
-        resp.headers['Content-Type'] = 'application/json'
-        return resp
+    if revoke_token(token_id):
+        return flask.make_response('', 200)
     else:
-        flask.abort(404)
+        return flask.make_response('', 404)
+        
+@Authorized(['administrator'])
+def validate_token(token_id):
+    """Handles logic and data transformation for GETs to /tokens/<token>."""
+
+    token_data = validate_token(token_id)
+    if token_data:
+        return flask.make_response(
+            json.dumps(token_data),
+            200,
+            DEFAULT_HEADERS
+        )
+    else:
+        flask.make_response('', 404)
 

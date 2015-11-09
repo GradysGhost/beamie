@@ -67,29 +67,6 @@ def generate_token(user):
 
     return token.id
 
-def authenticate(user, passwd):
-    """Authenticates a user and generates a token
-       Returns a token ID when successful, False for password mismatches,
-       and None when we can't find the username provided.
-    """
-    session = data.session()
-
-    # Get user by name. No user match? return None
-    users = session.query(data.User).filter_by(username=user)
-    if users.count() >= 1:
-        user = users.first()
-        memberships = session.query(data.RoleMembership).filter_by(user_id=user.id)
-        if 'disabled' in [ membership.role.name for membership in memberships ]:
-            return False
-        else:
-            inputhash = hashlib.sha512("".join([passwd, user.salt])).hexdigest()
-            if inputhash == user.pwhash:
-                return generate_token(user)
-            else:
-                return False
-    else:
-        return None
-
 def token_in_req_contains_role(req, role):
     """Returns True if the request has a valid X-Auth-Token header that shows
        the user is in the provided role. Returns False if the token's user is
