@@ -11,9 +11,8 @@ defined in Beamie's config file with the `media_paths` list.
 
 ## Response Bodies
 
-For the sake of brevity, the JSON resources returned by the functions below
-will not be individually listed. Instead, refer to these sample objects to see
-what kind of data you can expect.
+The API calls listed here return the following types of objects in their
+responses:
 
 ### Artist
 

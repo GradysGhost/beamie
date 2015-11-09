@@ -1,8 +1,6 @@
-# Beamie REST API Documentation
+# Beamie REST API Documentation - Users
 
-## Users
-
-### Concepts
+## Concepts
 
 Beamie works in a standard Role-Based Access Control (RBAC) scheme. Your user -
 that is; your username and and your salted, one-way hashed password - is
@@ -15,6 +13,21 @@ do. Here are the roles that matter to the core functionality of Beamie:
  * `contributor` - You can perform actions related to adding data to the server.
  * `administrator` - You can administer the system, make changes to global
                      options, or just about anything else in Beamie.
+
+## Response Bodies
+
+The API calls listed here return the following types of objects in their
+responses:
+
+### User
+
+    { "id" : 7,
+      "username" : "preferred_username",
+      "roles" : [
+        "listener",
+        "contributor"
+    ] }
+
 
 ### POST /users
 
@@ -29,29 +42,10 @@ Creates a new user. Requires an 'administrator' token.
         "contributor"
     ] }
 
-#### Response Body
-
-    { "id" : 7,
-      "username" : "preferred_username",
-      "roles" : [
-        "listener",
-        "contributor"
-    ] }
-
 
 ### GET /users/<username>
 
 Retrieves information about a the given user. Requires an 'administrator' token.
-
-#### Response Body
-
-    { "id" : 1,
-      "username" : "root",
-      "roles" : [
-        "listener",
-        "contributor",
-        "administrator"
-    ] }
 
 
 ### PUT /users/<username>
