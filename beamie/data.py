@@ -238,16 +238,23 @@ class QueryFilter(BaseMapping):
     value = Column('value', String(250))
     value_int = Column('value_int', Boolean, default=False)
 
-    def __init__(self, is_and, comparison, key, query_id, sequence, value, value_int):
+    def __init__(self,
+                 is_and,
+                 comparison,
+                 key,
+                 query_id,
+                 sequence,
+                 value,
+                 value_int):
         self.is_and, self.comparison, self.key, self.query_id, \
             self.sequence, self.value, self.value_int = \
                 is_and, comparison, key, query_id, sequence, value, value_int
 
     def __repr__(self):
-        return "QueryFilter<id=%i, is_and=%s, comparison='%s', key='%s', query_id=%i, " + \
-            "sequence=%i, value='%s', value_int=%s>" % (
-                self.id, self.is_and, self.comparison, self.key, self.query_id,
-                self.sequence, self.value, self.value_int)
+        return "QueryFilter<id=%i, is_and=%s, comparison='%s', key='%s', " \
+               "query_id=%i, sequence=%i, value='%s', value_int=%s>" % (
+                    self.id, self.is_and, self.comparison, self.key,
+                    self.query_id, self.sequence, self.value, self.value_int)
 
 class Role(BaseMapping):
     __tablename__ = 'role'
@@ -290,8 +297,8 @@ class Token(BaseMapping):
     expiry = Column('expiry', Integer)
     user_id = Column('user', Integer, ForeignKey("user.id")) 
 
-    def __init__(self, expiry, user_id):
-        self.expiry, self.user_id = expiry, user_id
+    def __init__(self, id, expiry, user_id):
+        self.id, self.expiry, self.user_id = id, expiry, user_id
 
     def __repr__(self):
         return "Token<id='%s', expiry=%i, user_id=%i>" % (

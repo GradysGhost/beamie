@@ -7,6 +7,7 @@ from time import time
 
 from beamie import data
 from beamie.config import CONFIG
+from beamie.lib.text import generate_random_string
 
 def tidy_tokens():
     session = data.session()
@@ -31,6 +32,27 @@ def purge_tokens():
 
     session.commit()
     return count
+
+def generate_token(user):
+    session = data.session()
+ 
+    token_id = generate_random_string(40, "".join([
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        "0123456789"
+    ])) 
+    token_expiry = int(time()) + CONFIG['token_expiry']
+ 
+    token = data.Token(id = token_id,
+                       expiry = token_expiry,
+                       user_id = user.id)
+ 
+ 
+    session.add(token)
+    session.commit()
+
+    log.debug("Generated token: %s" % token)
+ 
+    return token.id
 
 def revoke_token(token_id):
     session = data.session()

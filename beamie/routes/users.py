@@ -144,9 +144,8 @@ def handle_put_users_username():
             authorized = True
 
         # Token is administrative
-        else:
-            if shared.token_in_req_contains_role(req, 'administrator'):
-                authorized = True
+        elif 'administrator' in token_data['roles']:
+            authorized = True
 
     if authorized:
         if update_password(username, req_data['password']):
