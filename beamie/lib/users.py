@@ -15,9 +15,9 @@ def create_user(username, password, roles=None):
     """Create a user and optionally enroll him in the given roles.
 
        Returns:
-         - 0: Successfully created the user
-         - 1: A user by the given username already exists
-         - 2: Tried to create the user, but couldn't retrieve it afterward
+         - True: Successfully created the user
+         - False: A user by the given username already exists
+         - None: Tried to create the user, but couldn't retrieve it afterward
     """
 
     session = data.session()
@@ -25,7 +25,7 @@ def create_user(username, password, roles=None):
     # Does the user already exist?
     matches = session.query(data.User).filter_by(username=username)
     if matches.count() > 0:
-        return 1
+        return False
 
     # Create the new user object
     user = data.User(
@@ -56,16 +56,22 @@ def create_user(username, password, roles=None):
             session.commit()
         else:
             print "Could not find the specified username: %s" % req_data['user']
-            return 2
+            return None
 
-    return 0
+    return True
 
 def get_user(username):
-    """Get a user object, given its username."""
+    """Get a user object, given its username.
+
+       Returns
+         - False: Could not find the user
+         - dict: Successfully got user which this dict describes
+
+    """
     session = data.session()
 
     users = session.query(data.User).filter_by(username=username)
-    if users.count() >= 1:
+    if users.count() > 0:
         user = users.first()
         return {
             'id' : user.id,
@@ -94,4 +100,23 @@ def update_password(username, new_pass):
         return True
     else:
         return False
+
+
+def delete_user(username):
+    """Delete a user object and all cacading data.
+
+       Returns:
+         - True: Deleted the user successfully
+         - False: Could not find the user
+    """
+    
+    session = data.session()
+    users = session.query(data.User).filter_by(username=username)
+    if users.count() > 0:
+        user = users.first()
+        session.delete(user)
+        session.commit()
+        return True
+    else:
+        return None
 
