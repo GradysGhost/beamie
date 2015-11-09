@@ -70,7 +70,7 @@ def handle_post_users():
     except ValueError:
         return flask.make_response(
             json.dumps({
-                { 'error' : 'Invalid JSON' }
+                'error' : 'Invalid JSON'
             }),
             400,
             DEFAULT_HEADERS

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-import beamie.data
+import beamie.data as data
 
 from beamie.lib.auth import Authorized
 

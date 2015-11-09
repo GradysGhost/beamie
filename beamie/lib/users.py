@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
-import beamie.data as data
+import hashlib
+import logging as log
 
+import beamie.data as data
 from beamie.lib.roles import get_roles
 from beamie.lib.text import generate_salt
 
@@ -26,9 +28,10 @@ def create_user(username, password, roles=None):
         return False
 
     # Create the new user object
+    salt = generate_salt()
     user = data.User(
-        pwhash = hashlib.sha512("".join([password, user.salt])).hexdigest(),
-        salt = generate_salt(),
+        pwhash = hashlib.sha512("".join([password, salt])).hexdigest(),
+        salt = salt,
         username = username
     )
     session.add(user)
@@ -39,17 +42,17 @@ def create_user(username, password, roles=None):
         new_user = get_user(username)
         if new_user:
             all_roles = get_roles()
-            log.debug("All roles: %s" % all_roles)
             objects_to_create = []
             for role_to_enroll in roles:
-                if role_to_enroll in all_roles:
-                    rm = data.RoleMembership(
-                        role_id = role['id'],
-                        user_id = new_user['id']
-                    )
-                    objects_to_create.append(rm)
+                for role in all_roles:
+                    if role_to_enroll == role['name']:
+                        rm = data.RoleMembership(
+                            role_id = role['id'],
+                            user_id = new_user['id']
+                        )
+                        objects_to_create.append(rm)
 
-            log.debug("Object to create: %s" % objects_to_create)
+            log.debug("Objects to create: %s" % objects_to_create)
             session.add_all( objects_to_create )
             session.commit()
         else:
