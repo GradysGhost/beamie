@@ -12,6 +12,8 @@ from beamie.lib.auth import Authenticated
 from beamie.lib.tokens import do_validate_token
 from beamie.lib.users import create_user, get_user, update_password, delete_user
 
+DEFAULT_HEADERS = { "Content-Type" : "application/json" }
+
 ##### ROUTES #####
 
 # POST /users
@@ -57,10 +59,22 @@ def handle_post_users():
 
     try:
         req_data = json.loads(req.data)
-        if 'user' not in req_data or 'password' not in req_data:
-            return flask.make_response('', 400)
+        if 'username' not in req_data or 'password' not in req_data:
+            return flask.make_response(
+                json.dumps({
+                    'error' : 'Missing username or password data' }
+                }),
+                400,
+                DEFAULT_HEADERS
+            )
     except ValueError:
-        return flask.make_response('', 400)
+        return flask.make_response(
+            json.dumps({
+                { 'error' : 'Invalid JSON' }
+            }),
+            400,
+            DEFAULT_HEADERS
+        )
 
     if 'roles' in req_data:
         ret_code = create_user(req_data['username'],
@@ -75,14 +89,20 @@ def handle_post_users():
     elif ret_code is False:
         return flask.make_response(
             json.dumps({
-                'error' : 'Username is taken'
-            }), 409)
+                'error' : 'A user already exists with username "%s"' % (
+                    req_data['username'])
+            }),
+            412,
+            DEFAULT_HEADERS
+        )
     elif ret_code is None:
         return flask.make_response(
             json.dumps({
                 'error' : 'Could not retrieve user data after creating it'
             }),
-            500)
+            500,
+            DEFAULT_HEADERS
+        )
     else:
         return flask.make_response('', 500)
 
@@ -95,9 +115,21 @@ def handle_put_users_username():
     try:
         req_data = json.loads(req.data)
         if 'password' not in req_data:
-            return flask.make_response('', 400)
+            return flask.make_response(
+                json.dumps({
+                    'error' : 'Missing password data'
+                },
+                400,
+                DEFAULT_HEADERS
+            )
     except ValueError:
-        return flask.make_response('', 400)
+        return flask.make_response(
+            json.dumps({
+                'error' : 'Invalid JSON'
+            }),
+            400,
+            DEFAULT_HEADERS
+        )
 
     # Is the user authorized? Must be admin or self.
     authorized = False
@@ -130,7 +162,11 @@ def handle_get_users_username(username):
     user = get_user(username)
 
     if user:
-        return flask.make_response(json.dumps(user))
+        return flask.make_response(
+            json.dumps(user),
+            200,
+            DEFAULT_HEADERS
+            )
     else:
         return flask.make_response('', 404)
 

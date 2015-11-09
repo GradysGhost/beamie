@@ -4,7 +4,7 @@
 
 import flask
 
-import beamie.data
+import beamie.data as data
 
 from beamie.lib.auth import Authenticated
 from beamie.lib.roles import get_roles
@@ -46,7 +46,7 @@ def create_user(username, password, roles=None):
             for role_to_enroll in roles:
                 if role_to_enroll in all_roles:
                     rm = data.RoleMembership(
-                        role_id = role['id']
+                        role_id = role['id'],
                         user_id = new_user['id']
                     )
                     objects_to_create.append(rm)
