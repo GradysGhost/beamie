@@ -22,12 +22,17 @@ responses:
 
 ### POST /roles
 
-Creates a new role.
+Creates a new role. Requires an admin token.
 
 ### Request Body
 
     { "name" : "role_name",
       "description" : "Clear text explaining the role" }
+
+
+### GET /roles
+
+Gets a list of all roles.
 
 
 ### GET /roles/<role_name>

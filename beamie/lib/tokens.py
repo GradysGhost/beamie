@@ -22,7 +22,6 @@ def tidy_tokens():
 
     return count
 
-
 def purge_tokens():
     session = data.session()
 

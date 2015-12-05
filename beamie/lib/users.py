@@ -12,12 +12,12 @@ from beamie.lib.text import generate_salt
 
 
 def create_user(username, password, roles=None):
-    """Create a user and optionally enroll him in the given roles.
+    """ Create a user and optionally enroll him in the given roles.
 
-       Returns:
-         - True: Successfully created the user
-         - False: A user by the given username already exists
-         - None: Tried to create the user, but couldn't retrieve it afterward
+        Returns:
+          - True: Successfully created the user
+          - False: A user by the given username already exists
+          - None: Tried to create the user, but couldn't retrieve it afterward
     """
 
     session = data.session()

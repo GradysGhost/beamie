@@ -15,6 +15,7 @@ from sqlalchemy.orm import backref, relationship, sessionmaker
 from sqlalchemy.schema import PrimaryKeyConstraint
 
 from config import CONFIG
+from beamie.lib.text import generate_salt
 
 # Create a base mapping to extend into our data classes
 BaseMapping = declarative_base()
@@ -33,6 +34,63 @@ def construct(db_string=CONFIG['db_string']):
     eng = engine(db_string)
     BaseMapping.metadata.drop_all(eng)
     BaseMapping.metadata.create_all(eng)
+    session = sessionmaker(bind=eng)()
+    
+    role_disabled = Role('disabled', 'User cannot auth')
+    role_disabled.id = 1
+    role_listener = Role('listener', 'User can listen')
+    role_listener.id = 2
+    role_contributor = Role('contributor', 'User can upload')
+    role_contributor.id = 3
+    role_administrator = Role('administrator', 'User can administer Beamie')
+    role_administrator.id = 4
+    session.add_all([role_disabled, role_listener, role_contributor, role_administrator])
+
+    salt = generate_salt()
+    root_user = User(
+        hashlib.sha512("".join(['adminpass', salt])).hexdigest(),
+        salt,
+        'root'
+    )
+    root_user.id = 1
+    session.add(root_user)
+    session.commit()
+
+    memberships = [
+        RoleMembership(2, 1),
+        RoleMembership(3, 1),
+        RoleMembership(4, 1)
+    ]
+    session.add_all(memberships)
+    session.commit()
+
+def todict(db_obj):
+    obj_dict = dict()
+    obj_vars = [ var for var in vars(db_obj) if not var.startswith('_') ]
+    for var in obj_vars:
+        obj_dict[var] = getattr(db_obj, var)
+    return obj_dict
+      
+
+# Session wrapper
+class Session(object):
+    """A decorator to wrap functions in database sessions."""
+
+    def __init__(self):
+        """Create a new Session wrapper."""
+
+        self.session = session()
+
+    def __call__(self, f):
+        """Call the function with a session variable."""
+
+        def wrapped_f(*args, **kwargs):
+            kwargs['session'] == self.session
+            ret = f(*args, **kwargs)
+            self.session.close()
+            return ret
+
+        return wrapped_f
 
 # Data classes go here
 class Artist(BaseMapping):
@@ -269,13 +327,12 @@ class Role(BaseMapping):
             single_parent=True
     ))
 
-    def __init__(self, description, name):
+    def __init__(self, name, description):
         self.description, self.name = description, name
 
     def __repr__(self):
-        return "Role<id=%i, description='%s', name='%s'" % (
+        return "Role<id=%i, description='%s', name='%s'>" % (
             self.id, self.description, self.name)
-
 
 class RoleMembership(BaseMapping):
     __tablename__ = 'role_membership'
